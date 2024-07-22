@@ -24,32 +24,27 @@ import {
       return response;
     }
   
-    async allBooks(token: string, limit: number, page: number): Promise<BodyResponseGetAllBooks> {
-      const response = await this.fetchWithAuth(`/api/v1/books?limit=${limit}&page=${page}`, { method: "GET" }, token);
+    async allBooks(token: string): Promise<BodyResponseGetAllBooks> {
+      const response = await this.fetchWithAuth(`/api/v1/books`, { method: "GET" }, token);
       return response.json();
     }
   
-    async create(bookData: {
-      title: HTMLInputElement,
-      author: HTMLInputElement,
-      description: HTMLInputElement,
-      summary: HTMLInputElement,
-      publicationDate: HTMLInputElement
-    }, token: string): Promise<BodyResponseCreateBook> {
+    async create(title: HTMLInputElement, author: HTMLInputElement, description: HTMLInputElement, summary: HTMLInputElement, publicationDate: HTMLInputElement, token: string): Promise<BodyResponseCreateBook> {
       const newBook: BodyRequestCreateBook = {
-        title: bookData.title.value,
-        author: bookData.author.value,
-        description: bookData.description.value,
-        summary: bookData.summary.value,
-        publicationDate: bookData.publicationDate.value
+          title: title.value,
+          author: author.value,
+          description: description.value,
+          summary: summary.value,
+          publicationDate: publicationDate.value
       };
       const response = await this.fetchWithAuth("/api/v1/books", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newBook)
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(newBook)
       }, token);
       return response.json();
-    }
+  }
+  
   
     async getById(id: string, token: string): Promise<BodyResponseGetById> {
       const response = await this.fetchWithAuth(`/api/v1/books/${id}`, { method: "GET" }, token);
