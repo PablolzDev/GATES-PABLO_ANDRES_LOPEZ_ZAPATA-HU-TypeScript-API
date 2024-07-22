@@ -1,6 +1,26 @@
+import { AuthController } from "./controllers/controllers.user";
+import { LoginResponse } from "./models/auth.model";
 
-const form = document.querySelector("#form-post") as HTMLFormElement
+const userUrl: string = "http://190.147.64.47:5155/api/v1/auth/login";
+const form = document.querySelector(".sign-in-container form") as HTMLFormElement;
+const emailInput = document.querySelector("#email") as HTMLInputElement;
+const pssInput = document.querySelector("#pss") as HTMLInputElement;
 
-form.addEventListener('submit', () =>{
-    alert('hello')
-})
+form.addEventListener("submit", async (e: Event) => {
+    e.preventDefault();
+    const Users = new AuthController(userUrl);
+    try {
+        const response: LoginResponse = await Users.authenticate(emailInput.value, pssInput.value);
+        
+        if (response.data && response.data.token) {
+            console.log(`Successful ${response.data.token}`);
+            localStorage.setItem('authToken', response.data.token);
+        } else {
+            console.log("Token not found in response");
+            console.log("Response message:", response.message);
+            console.log("Response data:", response.data);
+        }
+    } catch (error) {
+        console.error("Authentication failed:", error);
+    }
+});
