@@ -1,7 +1,8 @@
-import { AuthController } from "./controllers/controllers.user";
-import { LoginResponse } from "./models/auth.model";
 
-const userUrl: string = "http://190.147.64.47:5155/api/v1/auth/login";
+import { LoginResponse } from "./models/auth.model";
+import { AuthController } from "./controllers/controllers.user.js";
+
+const userUrl: string = "http://190.147.64.47:5155";
 const form = document.querySelector(".sign-in-container form") as HTMLFormElement;
 const emailInput = document.querySelector("#email") as HTMLInputElement;
 const pssInput = document.querySelector("#pss") as HTMLInputElement;
@@ -15,6 +16,7 @@ form.addEventListener("submit", async (e: Event) => {
         if (response.data && response.data.token) {
             console.log(`Successful ${response.data.token}`);
             localStorage.setItem('authToken', response.data.token);
+            window.location.href = "bookManagment.html";
         } else {
             console.log("Token not found in response");
             console.log("Response message:", response.message);
