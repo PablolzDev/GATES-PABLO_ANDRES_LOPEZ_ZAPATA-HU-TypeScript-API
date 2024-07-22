@@ -1,80 +1,121 @@
-import {
-    BodyResponseDeleteBook,
-    BodyResponseGetById,
-    BodyResponseGetAllBooks,
-    BodyRequestCreateBook,
-    BodyResponseCreateBook,
-    BodyResquestUpdateBook,
-    BodyResponseUpdateBook
-  } from "../models/book.model";
-  
-  export class BooksController {
-    constructor(private domain: string) {}
-  
-    private async fetchWithAuth(endpoint: string, options: RequestInit, token: string): Promise<Response> {
-      const headers = {
+import {BodyResponseDeleteBook, BodyResponseGetById, BodyResponseGetAllBooks, BodyRequestCreateBook, BodyResponseCreateBook, BodyResquestUpdateBook, BodyResponseUpdateBook} from "../models/book.model.js";
+
+export class BooksController {
+    public domain: string;
+
+    constructor(domain: string){
+        this.domain = domain;
+    }
+
+    async allBooks(token: string, limit: number, page:number): Promise<BodyResponseGetAllBooks>{
+       const headers: Record<string, string> = {
         "accept": "*/*",
         "Authorization": `Bearer ${token}`,
-        ...options.headers
-      };
-      const response = await fetch(`${this.domain}${endpoint}`, { ...options, headers });
-      if (!response.ok) {
-        throw new Error(`API error: ${response.status}: ${response.statusText}`);
-      }
-      return response;
+       };
+
+       const reqOptions: RequestInit = {
+        method: "GET",
+        headers: headers
+       }
+
+       const response: Response = await fetch(`${this.domain}/api/v1/books?limit=${limit}&page=${page}`, reqOptions);
+       console.log(response);
+       if(!response.ok){
+        throw new Error(`Error al obtener libros: ${response.status}: ${response.statusText}`);
+       }
+       const responseBodyGetAllBooks: BodyResponseGetAllBooks = await response.json();
+       return responseBodyGetAllBooks;
     }
-  
-    async allBooks(token: string): Promise<BodyResponseGetAllBooks> {
-      const response = await this.fetchWithAuth(`/api/v1/books`, { method: "GET" }, token);
-      return response.json();
-    }
-  
-    async create(title: HTMLInputElement, author: HTMLInputElement, description: HTMLInputElement, summary: HTMLInputElement, publicationDate: HTMLInputElement, token: string): Promise<BodyResponseCreateBook> {
+    async create(title: string, author: string, description: string, summary: string, publicationDate: string, token: string): Promise<BodyResponseCreateBook> {
       const newBook: BodyRequestCreateBook = {
-          title: title.value,
-          author: author.value,
-          description: description.value,
-          summary: summary.value,
-          publicationDate: publicationDate.value
+          title,
+          author,
+          description,
+          summary,
+          publicationDate
       };
-      const response = await this.fetchWithAuth("/api/v1/books", {
+  
+      const headers: Record<string, string> = {
+          "accept": "*/*",
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`,
+      };
+  
+      const reqOptions: RequestInit = {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: headers,
           body: JSON.stringify(newBook)
-      }, token);
-      return response.json();
-  }
-  
-  
-    async getById(id: string, token: string): Promise<BodyResponseGetById> {
-      const response = await this.fetchWithAuth(`/api/v1/books/${id}`, { method: "GET" }, token);
-      return response.json();
-    }
-  
-    async update(id: string, bookData: {
-      title: HTMLInputElement,
-      author: HTMLInputElement,
-      description: HTMLInputElement,
-      summary: HTMLInputElement,
-      publicationDate: HTMLInputElement
-    }, token: string): Promise<BodyResponseUpdateBook> {
-      const updateBook: BodyResquestUpdateBook = {
-        title: bookData.title.value,
-        author: bookData.author.value,
-        description: bookData.description.value,
-        summary: bookData.summary.value,
-        publicationDate: bookData.publicationDate.value
       };
-      const response = await this.fetchWithAuth(`/api/v1/books/${id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updateBook)
-      }, token);
-      return response.json();
-    }
   
-    async delete(id: string, token: string): Promise<BodyResponseDeleteBook> {
-      const response = await this.fetchWithAuth(`/api/v1/books/${id}`, { method: "DELETE" }, token);
-      return response.json();
-    }
+      const response: Response = await fetch(`${this.domain}/api/v1/books`, reqOptions);
+      if (!response.ok) {
+          throw new Error(`Error al obtener libros: ${response.status}: ${response.statusText}`);
+      }
+      const responseBodyCreateBook: BodyResponseCreateBook = await response.json();
+      return responseBodyCreateBook;
   }
+    async getById(id: string, token: string): Promise<BodyResponseGetById>{
+        const headers: Record<string, string> = {
+            "accept": "*/*",
+            "Authorization": `Bearer ${token}`,
+        };
+        const reqOptions: RequestInit = {
+        method: "GET",
+        headers: headers
+        };
+        const response: Response = await fetch(`${this.domain}/api/v1/books/${id}`, reqOptions);
+        if(!response.ok){
+            throw new Error(`Error al obtener libros: ${response.status}: ${response.statusText}`);
+        }
+        const responseBodyGetById: BodyResponseGetById = await response.json();
+        return responseBodyGetById;
+    };
+
+    async update(idCatche:string,  title: string, author: string, description: string, summary: string, publicationDate: string, token: string): Promise<BodyResponseCreateBook> {
+      const updateBook: BodyRequestCreateBook = {
+          title,
+          author,
+          description,
+          summary,
+          publicationDate
+      };
+
+        const headers: Record<string, string> = {
+            "accept": "*/*",
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+        };
+
+        const reqOptions: RequestInit ={
+            method: "PATCH",
+            headers: headers,
+            body: JSON.stringify(updateBook)
+        };
+
+        const response: Response = await fetch(`${this.domain}/api/v1/books/${idCatche}`, reqOptions);
+        if(!response.ok){
+            throw new Error(`Error al obtener libros: ${response.status}: ${response.statusText}`);
+        }
+        const responseBodyUpdateBook: BodyResponseUpdateBook = await response.json();
+        return responseBodyUpdateBook;
+    };
+
+    async delete(id: string, token: string):Promise<BodyResponseDeleteBook>{
+        const headers: Record<string, string> = {
+            "accept": "*/*",
+            "Authorization": `Bearer ${token}`,
+        };
+
+        const reqOptions: RequestInit = {
+            method: "DELETE",
+            headers: headers
+        };
+
+        const response: Response = await fetch(`${this.domain}/api/v1/books/${id}`, reqOptions);
+        if(!response.ok){
+            throw new Error(`Error al obtener libros: ${response.status}: ${response.statusText}`);
+        }
+        const responseBodyDeleteBook: BodyResponseDeleteBook = await response.json();
+        return responseBodyDeleteBook;
+    }
+}
