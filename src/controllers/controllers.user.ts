@@ -7,23 +7,25 @@ export class AuthController {
     this.baseUrl = baseUrl;
   }
 
-  async authenticate(email: string, password: string): Promise<LoginResponse> {
+  async authenticate(email: HTMLInputElement, password: HTMLInputElement): Promise<LoginResponse> {
     const loginDetails: LoginRequest = {
-      email: email,
-      password: password
+      email: email.value,
+      password: password.value
     };
 
-    const requestOptions: RequestInit = {
+    const headers: Record<string, string> = {
+      'accept': '*/*',
+      'Content-Type': 'application/json'
+  };
+
+  const reqOptions: RequestInit = {
       method: 'POST',
-      headers: {
-        'Accept': '*/*',
-        'Content-Type': 'application/json'
-      },
+      headers: headers,
       body: JSON.stringify(loginDetails)
-    };
+  };
 
-    try {
-      const response: Response = await fetch(`${this.baseUrl}/api/v1/auth/login`, requestOptions);
+  try {
+      const response: Response = await fetch(`${this.baseUrl}/api/v1/auth/login`, reqOptions);
 
       if (!response.ok) {
         const errorData = await response.json();

@@ -1,52 +1,62 @@
-export class BookCardManager {
-    private bookshelf: HTMLElement;
+export class CardTemplateController{
+    public containerBooks: HTMLDivElement;
 
-    constructor(bookshelf: HTMLElement) {
-        this.bookshelf = bookshelf;
+    constructor(containerBooks: HTMLDivElement){
+        this.containerBooks = containerBooks;
     }
 
-    displayBook(id: string, title: string, author: string, description: string, summary: string, publicationDate: string): void {
-        const bookCard = document.createElement("article");
-        bookCard.className = "book-item col-md-4";
+    render(id: string, title: string, author: string, description: string, summary: string, publicationDate: string): void{
+        const figure = document.createElement("figure");
+        figure.classList.add("card", "col-4");
 
-        const titleElem = this.createElem("h3", title, ["book-name"]);
-        const authorElem = this.createElem("h5", author, ["book-writer"]);
+        const h2 = document.createElement("h2");
+        h2.classList.add("card-title", "text-center");
+        h2.textContent = title;
+        figure.appendChild(h2);
 
-        const detailsSection = document.createElement("section");
-        detailsSection.className = "book-details bg-white text-dark";
+        const h4 = document.createElement("h4");
+        h4.classList.add("card-title", "text-center");
+        h4.textContent = author;
+        figure.appendChild(h4);
 
-        const descriptionElem = this.createElem("h6", description, ["book-description"]);
-        const summaryElem = this.createElem("p", summary, ["book-summary"]);
-        const dateElem = this.createElem("small", publicationDate, ["book-release"]);
+        const figcaption = document.createElement("figcation");
+        figcaption.classList.add("card-body", "bg-light", "text-dark");
+        figure.appendChild(figcaption);
 
-        detailsSection.append(descriptionElem, summaryElem, dateElem);
+        const h5 = document.createElement("h5");
+        h5.classList.add("card-title", "text-center");
+        h5.textContent = description;
+        figcaption.appendChild(h5);
 
-        const actionPanel = document.createElement("div");
-        actionPanel.className = "book-actions";
+        const p = document.createElement("p");
+        p.classList.add("card-text", "text-center");
+        p.textContent = summary;
+        figcaption.appendChild(p);
 
-        const modifyBtn = this.createButton("Modify", ["btn-warning"], id);
-        const removeBtn = this.createButton("Remove", ["btn-danger"], id);
+        const h6 = document.createElement("h6");
+        h6.classList.add("card-text", "text-center");
+        h6.textContent = publicationDate;
+        figcaption.appendChild(h6);
 
-        actionPanel.append(modifyBtn, removeBtn);
-        detailsSection.appendChild(actionPanel);
+        const div = document.createElement("div");
+        div.classList.add("d-flex");
 
-        bookCard.append(titleElem, authorElem, detailsSection);
-        this.bookshelf.appendChild(bookCard);
-    }
+        const btnEdit = document.createElement("button");
+        btnEdit.classList.add("btn", "btn-warning");
+        btnEdit.textContent = "Edit";
+        btnEdit.type = "button";
+        btnEdit.dataset.id = id;
 
-    private createElem(tag: string, content: string, classes: string[]): HTMLElement {
-        const elem = document.createElement(tag);
-        elem.textContent = content;
-        elem.classList.add(...classes);
-        return elem;
-    }
+        const btnDelete = document.createElement("button");
+        btnDelete.classList.add("btn", "btn-danger");
+        btnDelete.textContent = "Delete";
+        btnDelete.type = "button";
+        btnDelete.dataset.id = id;
 
-    private createButton(text: string, classes: string[], dataId: string): HTMLButtonElement {
-        const btn = document.createElement("button");
-        btn.textContent = text;
-        btn.classList.add("btn", ...classes);
-        btn.setAttribute("type", "button");
-        btn.dataset.id = dataId;
-        return btn;
+        div.appendChild(btnEdit);
+        div.appendChild(btnDelete);
+        figcaption.appendChild(div);
+
+        this.containerBooks.appendChild(figure)
     }
 }
